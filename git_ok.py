@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-Git Sync Check - A tool to check if a Git repository is fully synced and nothing important remains local-only.
+git-ok - A tool to check what's not backed up in your Git repository.
+
+Ensure everything important is committed, pushed, or identified before removing local repos.
 """
 
 import os
@@ -236,7 +238,7 @@ class GitSyncChecker:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Check if a Git repository is fully synced with remote and list ignored files."
+        description="Check what's not backed up in your Git repository."
     )
     parser.add_argument(
         "path",

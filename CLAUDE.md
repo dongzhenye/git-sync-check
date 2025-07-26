@@ -1,7 +1,7 @@
-# Git Sync Check - Project Context
+# git-ok - Project Context
 
 ## Overview
-A tool to check if a Git repository is fully synced and nothing important remains local-only.
+A tool to check what's not backed up in your Git repository.
 
 ## Key Features
 - Check for uncommitted changes (staged, unstaged, untracked)
@@ -14,8 +14,8 @@ A tool to check if a Git repository is fully synced and nothing important remain
 ## Technical Details
 - Language: Python 3.6+
 - No external dependencies (uses only subprocess and standard library)
-- Entry point: git_sync_check.py
-- Can be installed as a command-line tool via setup.py
+- Entry point: git_ok.py
+- Direct script execution (no installation needed)
 
 ## Important File Detection
 - **Patterns**: `.env`, `secret`, `credential`, `key`, `password`, `.local`, `config.local`
@@ -25,19 +25,19 @@ A tool to check if a Git repository is fully synced and nothing important remain
 ## Usage Examples
 ```bash
 # Check current directory
-python3 git_sync_check.py
+python3 git_ok.py
 
 # Check specific repository
-python3 git_sync_check.py /path/to/repo
+python3 git_ok.py /path/to/repo
 
 # Show ignored files
-python3 git_sync_check.py --show-ignored
+python3 git_ok.py --show-ignored
 
 # Show only important files
-python3 git_sync_check.py --important-only
+python3 git_ok.py --important-only
 
 # JSON output for automation
-python3 git_sync_check.py --json
+python3 git_ok.py --json
 ```
 
 ## Project Status

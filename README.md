@@ -1,8 +1,8 @@
-# git-sync-check
+# git-ok
 
-A tool to check if a Git repository is fully synced and nothing important remains local-only.
+A tool to check what's not backed up in your Git repository.
 
-## Why git-sync-check?
+## Why git-ok?
 
 When managing multiple local repositories, it's common to want to clean up old projects. However, before deleting a repository, you need to ensure:
 - All changes are committed and pushed
@@ -47,15 +47,15 @@ This tool provides a comprehensive check for all these concerns in one simple co
 
 ```bash
 # Clone the repository
-git clone https://github.com/dongzhenye/git-sync-check.git
-cd git-sync-check
+git clone https://github.com/dongzhenye/git-ok.git
+cd git-ok
 
 # Run directly with Python
-python3 git_sync_check.py /path/to/repo
+python3 git_ok.py /path/to/repo
 
 # Or make it executable
-chmod +x git_sync_check.py
-./git_sync_check.py /path/to/repo
+chmod +x git_ok.py
+./git_ok.py /path/to/repo
 ```
 
 ## Usage
@@ -63,22 +63,22 @@ chmod +x git_sync_check.py
 ### Basic Check
 ```bash
 # Check current directory
-git-sync-check
+git-ok
 
 # Check specific repository
-git-sync-check /path/to/repo
+git-ok /path/to/repo
 ```
 
 ### Show Ignored Files
 This is especially useful for finding important local configuration files:
 ```bash
-git-sync-check --show-ignored
+git-ok --show-ignored
 ```
 
 ### JSON Output
 For scripting and automation:
 ```bash
-git-sync-check --json
+git-ok --json
 ```
 
 ## Example Output
