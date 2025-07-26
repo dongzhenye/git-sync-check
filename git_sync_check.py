@@ -120,6 +120,7 @@ class GitSyncChecker:
                     return False, f"⚠️  Branch '{branch}' has no remote tracking branch"
         
         # 5. Compare local and remote
+        upstream = upstream.strip()  # Remove any whitespace
         code, ahead, _ = self.run_git_command(["rev-list", "--count", f"{upstream}..{branch}"])
         code2, behind, _ = self.run_git_command(["rev-list", "--count", f"{branch}..{upstream}"])
         
