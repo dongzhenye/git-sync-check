@@ -15,7 +15,9 @@ from typing import List, Tuple, Optional
 
 class GitSyncChecker:
     def __init__(self, repo_path: str):
-        self.repo_path = Path(repo_path).resolve()
+        self.repo_path = Path(repo_path).expanduser().resolve()
+        if not self.repo_path.exists():
+            raise FileNotFoundError(f"Path does not exist: {self.repo_path}")
         self.is_git = self.is_git_repo()
     
     def is_git_repo(self) -> bool:
