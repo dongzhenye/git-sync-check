@@ -1,7 +1,7 @@
 # Git Sync Check - Project Context
 
 ## Overview
-A command-line tool to check if a local Git repository is fully synced with remote, helping users safely delete local repositories without losing uncommitted work or important ignored files.
+A tool to check if a Git repository is fully synced and nothing important remains local-only.
 
 ## Key Features
 - Check for uncommitted changes (staged, unstaged, untracked)

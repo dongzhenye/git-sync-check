@@ -1,6 +1,6 @@
 # git-sync-check
 
-A command-line tool to check if a Git repository is fully synced with its remote, helping you safely delete local repositories without losing uncommitted work or important configuration files.
+A tool to check if a Git repository is fully synced and nothing important remains local-only.
 
 ## Why git-sync-check?
 

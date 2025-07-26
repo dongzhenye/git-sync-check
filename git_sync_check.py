@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Git Sync Check - A tool to check if a local git repository is fully synced with remote.
+Git Sync Check - A tool to check if a Git repository is fully synced and nothing important remains local-only.
 """
 
 import os
