@@ -16,12 +16,34 @@ from typing import List, Tuple, Optional
 class GitSyncChecker:
     def __init__(self, repo_path: str):
         self.repo_path = Path(repo_path).resolve()
-        if not self.is_git_repo():
-            raise ValueError(f"{self.repo_path} is not a git repository")
+        self.is_git = self.is_git_repo()
     
     def is_git_repo(self) -> bool:
         """Check if the directory is a git repository."""
         return (self.repo_path / ".git").exists()
+    
+    def get_directory_stats(self) -> Tuple[int, int]:
+        """Get file count and total size for non-git directory."""
+        file_count = 0
+        total_size = 0
+        
+        for path in self.repo_path.rglob('*'):
+            if path.is_file():
+                file_count += 1
+                try:
+                    total_size += path.stat().st_size
+                except:
+                    pass
+        
+        return file_count, total_size
+    
+    def format_size(self, size_bytes: int) -> str:
+        """Format bytes to human readable size."""
+        for unit in ['B', 'KB', 'MB', 'GB']:
+            if size_bytes < 1024.0:
+                return f"{size_bytes:.1f} {unit}"
+            size_bytes /= 1024.0
+        return f"{size_bytes:.1f} TB"
     
     def run_git_command(self, args: List[str]) -> Tuple[int, str, str]:
         """Run a git command and return exit code, stdout, and stderr."""
@@ -162,9 +184,20 @@ class GitSyncChecker:
         """Perform a full sync check and return results."""
         results = {
             "repo_path": str(self.repo_path),
+            "is_git": self.is_git,
             "is_clean": True,
             "issues": []
         }
+        
+        # Handle non-git directory - most severe case
+        if not self.is_git:
+            results["is_clean"] = False
+            results["issues"].append("Not a Git repository")
+            file_count, total_size = self.get_directory_stats()
+            results["file_count"] = file_count
+            results["total_size"] = total_size
+            results["total_size_human"] = self.format_size(total_size)
+            return results
         
         # 1. Check working directory state
         has_changes, changes_detail = self.check_uncommitted_changes()
@@ -273,18 +306,31 @@ def main():
             print(json.dumps(results, indent=2))
         else:
             # Pretty print results
-            print(f"\n📁 Repository: {results['repo_path']}")
-            print("=" * 60)
-            
-            if results["is_clean"]:
-                print("✅ Repository is clean and synced!")
+            if not results.get("is_git", True):
+                # Special handling for non-git directories
+                print(f"\n📁 Directory: {results['repo_path']}")
+                print("=" * 60)
+                print("❌ NOT A GIT REPOSITORY!")
+                print(f"\n⚠️  This directory has no version control.")
+                print(f"   All {results['file_count']} files ({results['total_size_human']}) are NOT backed up!")
+                print(f"\n💡 To initialize Git: git init")
+                print("=" * 60)
+                print("\n⚠️  CRITICAL: This directory has no backup whatsoever!")
+                print("   Any file deletion or disk failure means permanent data loss.")
             else:
-                print("⚠️  Issues found:")
-                for issue in results["issues"]:
-                    print(f"   - {issue}")
-            
-            print(f"\n🔄 Sync Status:")
-            print(f"   {results['sync_status']}")
+                # Normal git repository output
+                print(f"\n📁 Repository: {results['repo_path']}")
+                print("=" * 60)
+                
+                if results["is_clean"]:
+                    print("✅ Repository is clean and synced!")
+                else:
+                    print("⚠️  Issues found:")
+                    for issue in results["issues"]:
+                        print(f"   - {issue}")
+                
+                print(f"\n🔄 Sync Status:")
+                print(f"   {results['sync_status']}")
             
             if "uncommitted_changes" in results:
                 print(f"\n📝 Uncommitted Changes:")
@@ -297,11 +343,12 @@ def main():
             if "operation_in_progress" in results:
                 print(f"\n⚡ Operation: {results['operation_in_progress']}")
             
-            print(f"\n🚫 Ignored Files: {results['ignored_count']} files")
-            
-            # Show important ignored files if found
-            if "important_ignored_files" in results and results["important_ignored_files"]:
-                print(f"   ⚠️  Found {results['important_ignored_count']} important config/secret files")
+            if results.get("is_git", True):
+                print(f"\n🚫 Ignored Files: {results['ignored_count']} files")
+                
+                # Show important ignored files if found
+                if "important_ignored_files" in results and results["important_ignored_files"]:
+                    print(f"   ⚠️  Found {results['important_ignored_count']} important config/secret files")
             
             if args.important_only and "important_ignored_files" in results:
                 print("   Important files that would be lost:")
@@ -332,8 +379,12 @@ def main():
             
             # Safety reminder
             if not results["is_clean"]:
-                print("⚠️  WARNING: This repository has unsynced changes!")
-                print("   Review the above before deleting this repository.")
+                if not results.get("is_git", True):
+                    sys.exit(2)  # Special exit code for non-git directories
+                else:
+                    print("⚠️  WARNING: This repository has unsynced changes!")
+                    print("   Review the above before deleting this repository.")
+                    sys.exit(1)
             
     except Exception as e:
         print(f"❌ Error: {e}", file=sys.stderr)

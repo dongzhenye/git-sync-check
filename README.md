@@ -13,30 +13,37 @@ This tool provides a comprehensive check for all these concerns in one simple co
 
 ### Real-world Scenarios
 
-1. **Orphaned Local Repository** - No remote configured with local commits
+1. **Non-Git Directory** - Most critical! No version control at all
+   ```
+   ❌ NOT A GIT REPOSITORY!
+   All 156 files (2.3 MB) are NOT backed up!
+   ```
+
+2. **Orphaned Local Repository** - No remote configured with local commits
    ```
    ⚠️  No remote repository configured! (2 local commits)
    ```
 
-2. **Database Files** - Local SQLite databases that might contain important data
+3. **Database Files** - Local SQLite databases that might contain important data
    ```
    ⚠️  Important config/secret files:
       - addresses.db
    ```
 
-3. **Environment Files** - Configuration files with API keys or secrets
+4. **Environment Files** - Configuration files with API keys or secrets
    ```
    ⚠️  Important config/secret files:
       - .env.local
       - .claude/settings.local.json
    ```
 
-4. **Large Node.js Projects** - Smart filtering to avoid false positives
+5. **Large Node.js Projects** - Smart filtering to avoid false positives
    - Ignores `node_modules/` and build directories
    - Focuses on actual config files, not source code
 
 ## Features
 
+- **Non-Git Directory Detection**: Warns when directories have NO version control at all (most critical!)
 - **Uncommitted Changes Detection**: Identifies staged, unstaged, and untracked files
 - **Remote Sync Status**: Checks if your local branch is ahead or behind the remote
 - **Ignored Files Listing**: Shows all files ignored by `.gitignore` (crucial for finding local configs)
